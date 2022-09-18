@@ -10,11 +10,11 @@ class Tournaments(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.create_channel_id = config["TOURNAMENT"][self.bot.mode]["CHANNEL"]
-        self.category = self.bot.get_channel(config["TOURNAMENT"][self.bot.mode]["CATEGORY"])
         self.channels = []
 
     @commands.Cog.listener()
     async def on_ready(self):
+        self.category = self.bot.get_channel(config["TOURNAMENT"][self.bot.mode]["CATEGORY"])
         logger.info(f"[COG] Loaded {self.__class__.__name__}")
 
     @commands.Cog.listener()
