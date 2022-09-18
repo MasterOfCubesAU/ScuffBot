@@ -63,7 +63,7 @@ class SCUFFBOT(commands.Bot):
 
     async def on_ready(self):
         self.appinfo = await super().application_info()
-        # self.avatar_url = self.appinfo.icon.url
+        self.avatar_url = self.appinfo.icon.url if self.appinfo.icon is not None else None
         logger.info(
             f"Connected on {self.user.name} ({self.mode}) | d.py v{str(discord.__version__)}"
         )
