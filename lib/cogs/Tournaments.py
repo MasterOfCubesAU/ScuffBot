@@ -9,7 +9,8 @@ class Tournaments(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.create_channel_id = config["TOURNAMENT"][self.bot.mode]["CHANNEL"]
+        self.two_channel = config["TOURNAMENT"][self.bot.mode]["2_CHANNEL"]
+        self.threes_channel = config["TOURNAMENT"][self.bot.mode]["3_CHANNEL"]
         self.channels = []
 
     @commands.Cog.listener()
@@ -24,25 +25,27 @@ class Tournaments(commands.Cog):
         if member.bot:
             return
 
+        #Channel deletion
         if before.channel in self.channels and len(before.channel.members) == 0:
             await self.deleteTournamentChannel(before.channel)
-        if after.channel.id == self.create_channel_id:
-            voice_channel = await self.createTournamentChannel(member)
+
+        #Channel creation
+        if after.channel.id == self.two_channel:
+            voice_channel = await self.createTournamentChannel(member, 2)
+            await member.move_to(voice_channel)
+        elif after.channel.id == self.threes_channel:
+            voice_channel = await self.createTournamentChannel(member, 3)
             await member.move_to(voice_channel)
             
-            
-    async def createTournamentChannel(self, member):
-        voice_channel = await member.guild.create_voice_channel(name=f"RL 3s #{1 if len(self.channels) == 0 else int(self.channels[-1].name.split('#')[-1]) + 1}", user_limit=3, category=self.category, reason=f"{member} created a 3s voice channel.")
+    async def createTournamentChannel(self, member, limit):
+        channel_num = 1 if len(self.channels) == 0 else int([channel for channel in self.channels if f"{limit}'s" in channel.name][-1].name.split('#')[-1]) + 1
+        voice_channel = await member.guild.create_voice_channel(name=f"RL {limit}'s #{channel_num}", user_limit=limit, category=self.category, reason=f"{member} created a {limit}'s voice channel.")
         self.channels.append(voice_channel)
         return voice_channel
             
     async def deleteTournamentChannel(self, channel):
         await channel.delete(reason=f"{channel.name} empty.")
         self.channels.remove(channel)
-
-    
-
-        
 
 async def setup(bot):
     await bot.add_cog(Tournaments(bot))
