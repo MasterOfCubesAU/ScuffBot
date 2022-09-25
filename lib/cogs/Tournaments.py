@@ -5,6 +5,8 @@ from lib.bot import config, logger, SCUFFBOT, DEV_GUILD
 from typing import Literal, Union, Optional
 import discord
 
+import re
+
 class Tournaments(commands.Cog):
 
     def __init__(self, bot):
@@ -16,6 +18,7 @@ class Tournaments(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         self.category = self.bot.get_channel(config["TOURNAMENT"][self.bot.mode]["CATEGORY"])
+        await self.getLostChannels()
         logger.info(f"[COG] Loaded {self.__class__.__name__}")
 
     @commands.Cog.listener()
@@ -37,6 +40,12 @@ class Tournaments(commands.Cog):
             voice_channel = await self.createTournamentChannel(member, 3)
             await member.move_to(voice_channel)
             
+    async def getLostChannels(self):
+        for channel in self.category.channels:
+            if re.match("^RL [0-9]'s #[0-9]+$", channel.name):
+                logger.info(f"[TOURNAMENTS] Found lost channel {channel.name}")
+                self.channels.append(channel)
+
     async def createTournamentChannel(self, member, limit):
         channel_num = 1 if len(self.channels) == 0 else int([channel for channel in self.channels if f"{limit}'s" in channel.name][-1].name.split('#')[-1]) + 1
         voice_channel = await member.guild.create_voice_channel(name=f"RL {limit}'s #{channel_num}", user_limit=limit, category=self.category, reason=f"{member} created a {limit}'s voice channel.")
