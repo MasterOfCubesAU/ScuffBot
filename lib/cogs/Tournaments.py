@@ -43,11 +43,15 @@ class Tournaments(commands.Cog):
     async def getLostChannels(self):
         for channel in self.category.channels:
             if re.match("^RL [0-9]'s #[0-9]+$", channel.name):
-                logger.info(f"[TOURNAMENTS] Found lost channel {channel.name}")
-                self.channels.append(channel)
+                if len(channel.members) == 0:
+                    await self.deleteTournamentChannel(channel)
+                else:
+                    logger.info(f"[TOURNAMENTS] Found lost channel {channel.name}")
+                    self.channels.append(channel)
 
     async def createTournamentChannel(self, member, limit):
-        channel_num = 1 if len(self.channels) == 0 else int([channel for channel in self.channels if f"{limit}'s" in channel.name][-1].name.split('#')[-1]) + 1
+        channels = [channel for channel in self.channels if re.match(f"^RL {limit}'s #[0-9]+$", channel.name)]
+        channel_num = 1 if len(channels) == 0 else max([int(channel.name.split('#')[-1]) for channel in channels]) + 1
         voice_channel = await member.guild.create_voice_channel(name=f"RL {limit}'s #{channel_num}", user_limit=limit, category=self.category, reason=f"{member} created a {limit}'s voice channel.")
         self.channels.append(voice_channel)
         return voice_channel
