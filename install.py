@@ -30,7 +30,7 @@ def main():
 
     
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Install all dependencies for MOCBOT.')
+    parser = argparse.ArgumentParser(description='Install all dependencies for SCUFFBOT.')
     parser.add_argument('--reinstall', action='store_true', help='Force clean install.')
     parser.add_argument('--clean', action='store_true', help='Removes all dependencies.')
     args = parser.parse_args()
