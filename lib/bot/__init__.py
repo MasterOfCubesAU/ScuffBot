@@ -2,6 +2,7 @@ from discord.ext import commands
 from discord import app_commands
 import logging.config
 import requests
+import logging.config
 import logging
 import discord
 import yaml
@@ -9,7 +10,6 @@ import sys
 import os
 
 
-logger = logging.getLogger(__name__)
 with open("./config.yml", "r") as f:
     config = yaml.safe_load(f)
 
@@ -30,17 +30,17 @@ class SCUFFBOT(commands.Bot):
         
     def setup_logger(self):
         logging.config.dictConfig(config["LOGGING"])
-        formatter = logging.Formatter("%(asctime)s %(levelname)s: %(message)s", datefmt="%Y-%m-%d - %H:%M:%S") 
-        ch = logging.StreamHandler(sys.stdout)
-        ch.setLevel(logging.INFO)
-        ch.setFormatter(formatter)
-        logger.addHandler(ch)
+        self.logger = logging.getLogger(__name__)
+        for handler in logging.getLogger().handlers:
+            if handler.name == "file" and os.path.isfile('logs/latest.log'):
+                handler.doRollover()
+        logging.getLogger('discord').setLevel(logging.DEBUG)
 
     async def load_cog_manager(self):
         await self.load_extension("lib.cogs.Cogs")
 
     def run(self):
-        super().run(config["TOKENS"][self.mode])
+        super().run(config["TOKENS"][self.mode], log_handler=None)
 
     def create_embed(self, title, description, colour):
         embed = discord.Embed(title=None, description=description, colour=colour if colour else 0xDC3145, timestamp=discord.utils.utcnow())
@@ -64,12 +64,12 @@ class SCUFFBOT(commands.Bot):
     async def on_ready(self):
         self.appinfo = await super().application_info()
         self.avatar_url = self.appinfo.icon.url if self.appinfo.icon is not None else None
-        logger.info(
+        self.logger.info(
             f"Connected on {self.user.name} ({self.mode}) | d.py v{str(discord.__version__)}"
         )
 
     async def on_interaction(self, interaction):
-        logger.info(f"[COMMAND] [{interaction.guild} // {interaction.guild.id}] {interaction.user} ({interaction.user.id}) used command {interaction.command.name}")
+        self.logger.info(f"[COMMAND] [{interaction.guild} // {interaction.guild.id}] {interaction.user} ({interaction.user.id}) used command {interaction.command.name}")
 
     async def on_message(self, message):
         await self.wait_until_ready()
