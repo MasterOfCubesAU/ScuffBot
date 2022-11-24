@@ -1,6 +1,6 @@
 __pycache__
 
-.ScuffBot
+.SCUFFBOT
 config.yml
-latest.log
+logs/*
 assets

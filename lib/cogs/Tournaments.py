@@ -1,9 +1,10 @@
 from discord.ext import commands
 from discord.ui import Button, View
 from discord import app_commands
-from lib.bot import config, logger, SCUFFBOT, DEV_GUILD
+from lib.bot import config, SCUFFBOT, DEV_GUILD
 from typing import Literal, Union, Optional
 import discord
+import logging
 
 import re
 
@@ -14,12 +15,15 @@ class Tournaments(commands.Cog):
         self.two_channel = config["TOURNAMENT"][self.bot.mode]["2_CHANNEL"]
         self.threes_channel = config["TOURNAMENT"][self.bot.mode]["3_CHANNEL"]
         self.channels = []
+        self.logger = logging.getLogger(__name__)
+
+    async def cog_load(self):
+        self.logger.info(f"[COG] Loaded {self.__class__.__name__}")
 
     @commands.Cog.listener()
     async def on_ready(self):
         self.category = self.bot.get_channel(config["TOURNAMENT"][self.bot.mode]["CATEGORY"])
         await self.getLostChannels()
-        logger.info(f"[COG] Loaded {self.__class__.__name__}")
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
@@ -46,7 +50,7 @@ class Tournaments(commands.Cog):
                 if len(channel.members) == 0:
                     await self.deleteTournamentChannel(channel)
                 else:
-                    logger.info(f"[TOURNAMENTS] Found lost channel {channel.name}")
+                    self.logger.info(f"[TOURNAMENTS] Found lost channel {channel.name}")
                     self.channels.append(channel)
 
     async def createTournamentChannel(self, member, limit):
