@@ -7,6 +7,7 @@ import discord
 import logging
 
 import re
+import asyncio
 
 class Tournaments(commands.Cog):
 
@@ -17,7 +18,7 @@ class Tournaments(commands.Cog):
         self.logger = logging.getLogger(__name__)
 
     async def cog_load(self):
-        await self.getLostChannels()
+        asyncio.create_task(self.getLostChannels())
         for channelID in self.TRIGGER_CHANNELS:
             if (channel := self.bot.get_channel(channelID)) is not None:
                 self.logger.info(f"[TOURNAMENTS] Listening for {channel}")
@@ -41,6 +42,7 @@ class Tournaments(commands.Cog):
 
             
     async def getLostChannels(self):
+        await self.bot.wait_until_ready()
         for guild in self.bot.guilds:
             for channel in guild.channels:
                 if re.match("^RL [0-9]'s #[0-9]+$", channel.name):
