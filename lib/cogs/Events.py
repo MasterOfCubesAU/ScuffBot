@@ -52,7 +52,10 @@ class Events(commands.Cog):
             user = guild.get_member(payload.user_id)
             if not user.bot:
                 if message_id in DBHandler.column("SELECT MessageID FROM Events"):
-                    DBHandler.execute("INSERT INTO Registrants (ID, Registrant) VALUES (?, ?)", base64.b64encode(str(message_id).encode('utf8'))[:8], user.id)
+                    ID = base64.b64encode(str(message_id).encode('utf8'))[:8]
+                    if not user.id in DBHandler.column("SELECT Registrant FROM Registrants"):
+                        DBHandler.execute("INSERT INTO Registrants (ID, Registrant) VALUES (?, ?)", ID, user.id)
+                    self.logger.info(f"{user} has expressed their interest into event {ID}")
                     registerSuccessEmbed = self.bot.create_embed("Thankyou! Your expression of interest has been confirmed. A confirmation message will be sent prior to the event date.\n\n**If you change your mind, you can opt-out by un-reacting to the event message.**\n", colour=0x00ff00)
                     await user.send(embed=registerSuccessEmbed)
     
@@ -67,7 +70,9 @@ class Events(commands.Cog):
                 user = guild.get_member(payload.user_id)
                 if not user.bot:
                     if message_id in DBHandler.column("SELECT MessageID FROM Events"):
+                        ID = base64.b64encode(str(message_id).encode('utf8'))[:8]
                         DBHandler.execute("DELETE FROM Registrants WHERE Registrant = ?", user.id)
+                        self.logger.info(f"{user} has revoked their expression of interest from event {ID}")
                         optOutEmbed = self.bot.create_embed("You have successfully opted out of the event.", colour=0x00ff00)
                         await user.send(embed=optOutEmbed)
 
