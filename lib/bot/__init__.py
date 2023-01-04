@@ -26,7 +26,12 @@ class SCUFFBOT(commands.Bot):
         
     async def setup_hook(self):
         self.setup_logger()
-        await self.load_cog_manager()    
+        await self.load_cog_manager()
+        self.appinfo = await super().application_info()
+        if self.appinfo.icon is not None:
+            self.avatar_url = self.appinfo.icon.url
+        else:
+            self.avatar_url = f"https://cdn.discordapp.com/embed/avatars/{int(self.user.discriminator) % 5}.png"
         
     def setup_logger(self):
         logging.config.dictConfig(config["LOGGING"])
@@ -63,8 +68,6 @@ class SCUFFBOT(commands.Bot):
         return interaction.user.id in config["Developers"]
 
     async def on_ready(self):
-        self.appinfo = await super().application_info()
-        self.avatar_url = self.appinfo.icon.url if self.appinfo.icon is not None else None
         self.logger.info(
             f"Connected on {self.user.name} ({self.mode}) | d.py v{str(discord.__version__)}"
         )
