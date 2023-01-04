@@ -42,9 +42,10 @@ class SCUFFBOT(commands.Bot):
     def run(self):
         super().run(config["TOKENS"][self.mode], log_handler=None)
 
-    def create_embed(self, title, description, colour):
-        embed = discord.Embed(title=None, description=description, colour=colour if colour else 0xDC3145, timestamp=discord.utils.utcnow())
-        embed.set_author(name=title if title else None, icon_url=self.avatar_url)
+    def create_embed(self, description=None, **kwargs):
+        embed = discord.Embed(title=None, description=description if description else None, colour=kwargs.get("colour", 0xDC3145), timestamp=discord.utils.utcnow())
+        if (title := kwargs.get("title", None)) is not None:
+            embed.set_author(name=title , icon_url=self.avatar_url)
         return embed
 
     #  Doesn't work, need to look into
