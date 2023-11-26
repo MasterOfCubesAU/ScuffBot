@@ -20,6 +20,7 @@ TOURNAMENT:
     {"ID": 234567891, "TYPE": 3}
 ]
 
+NAME_ROLES: { 1234: "RANK 1", 5678: "RANK 2" }
 
 LOGGING:  {
     "version": 1,
