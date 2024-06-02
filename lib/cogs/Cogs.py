@@ -22,7 +22,7 @@ class Cogs(commands.Cog):
 
         if self.bot.is_dev:
             for cog in [path.split("\\")[-1][:-3] if os.name == "nt" else path.split("\\")[-1][:-3].split("/")[-1] for path in glob("./lib/cogs/*.py")]:
-                if cog not in ["Cogs", "ErrorHandler"]:
+                if cog not in ["Cogs", "ErrorHandler", "SixMans"]:
                     self.disabled_cogs.append(cog)
         else:
             self.disabled_cogs.append("Template")
@@ -74,9 +74,7 @@ class Cogs(commands.Cog):
     async def cog_load(self):
         self.logger.info(f"[COG] Loaded {self.__class__.__name__}")
 
-    CogGroup = app_commands.Group(
-        name="cog", description="Manages SCUFFBOT cogs.", guild_ids=[1165195575013163038])
-
+    CogGroup = app_commands.Group(name="cog", description="Manages SCUFFBOT cogs.", guild_ids=[1165195575013163038, 422983658257907732])
     @CogGroup.command(name="list", description="Lists all cog statuses.")
     @app_commands.checks.has_permissions(manage_guild=True)
     async def list(self, interaction: discord.Interaction):

@@ -8,6 +8,7 @@ import discord
 import yaml
 import sys
 import os
+from ..db import DB as SCUFF_DB
 
 
 with open("./config.yml", "r") as f:
@@ -16,16 +17,19 @@ with open("./config.yml", "r") as f:
 DEV_GUILD = discord.Object(id=config["GUILD_IDS"]["DEV"])
 MAIN_GUILD = discord.Object(id=config["GUILD_IDS"]["MAIN"])
 
+DB = SCUFF_DB()
+
 class SCUFFBOT(commands.Bot):
 
     def __init__(self, is_dev):
         super().__init__(command_prefix="!", owner_id=169402073404669952, intents=discord.Intents.all(), application_id=(config["APPLICATION_IDS"]["DEVELOPMENT"] if is_dev else config["APPLICATION_IDS"]["PRODUCTION"]))
         self.is_dev = is_dev
         self.mode = "DEVELOPMENT" if is_dev else "PRODUCTION"
-        
-        
+
     async def setup_hook(self):
         self.setup_logger()
+        self.DB = DB
+        DB.connect()
         await self.load_cog_manager()    
         
     def setup_logger(self):
