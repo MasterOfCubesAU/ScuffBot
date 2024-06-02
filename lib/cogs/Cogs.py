@@ -19,7 +19,7 @@ class Cogs(commands.Cog):
         self.unloaded_cogs = []
         self.loaded_cogs = []
         self.logger = logging.getLogger(__name__)
-        
+
         if self.bot.is_dev:
             for cog in [path.split("\\")[-1][:-3] if os.name == "nt" else path.split("\\")[-1][:-3].split("/")[-1] for path in glob("./lib/cogs/*.py")]:
                 if cog not in ["Cogs", "ErrorHandler"]:
@@ -74,15 +74,20 @@ class Cogs(commands.Cog):
     async def cog_load(self):
         self.logger.info(f"[COG] Loaded {self.__class__.__name__}")
 
-    CogGroup = app_commands.Group(name="cog", description="Manages SCUFFBOT cogs.", guild_ids=[1165195575013163038])
+    CogGroup = app_commands.Group(
+        name="cog", description="Manages SCUFFBOT cogs.", guild_ids=[1165195575013163038])
+
     @CogGroup.command(name="list", description="Lists all cog statuses.")
     @app_commands.checks.has_permissions(manage_guild=True)
     async def list(self, interaction: discord.Interaction):
         embed = self.bot.create_embed("SCUFFBOT SETUP", None, None)
-        embed.add_field(name="Enabled", value=">>> {}".format("\n".join([x for x in self.bot.cogs])), inline=True)
+        embed.add_field(name="Enabled", value=">>> {}".format(
+            "\n".join([x for x in self.bot.cogs])), inline=True)
         if bool(self.unloaded_cogs + self.disabled_cogs):
-            embed.add_field(name="Disabled", value=">>> {}".format("\n".join(self.unloaded_cogs + self.disabled_cogs)), inline=True)
-        embed.add_field(name="\u200b", value=f"You may also use the following command to manage cogs.\n> `/cog [load|unload|reload] [*cogs]`", inline=False)
+            embed.add_field(name="Disabled", value=">>> {}".format(
+                "\n".join(self.unloaded_cogs + self.disabled_cogs)), inline=True)
+        embed.add_field(
+            name="\u200b", value=f"You may also use the following command to manage cogs.\n> `/cog [load|unload|reload] [*cogs]`", inline=False)
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @CogGroup.command(name="unload", description="Unloads cogs.")
@@ -99,9 +104,11 @@ class Cogs(commands.Cog):
             except Exception as e:
                 failed_cogs.append(cog)
         if failed_cogs:
-            embed = self.bot.create_embed("SCUFFBOT SETUP", f"Could not unload {', '.join([cog for cog in failed_cogs])}.", None)
+            embed = self.bot.create_embed(
+                "SCUFFBOT SETUP", f"Could not unload {', '.join([cog for cog in failed_cogs])}.", None)
         else:
-            embed = self.bot.create_embed("SCUFFBOT SETUP", f"Unloaded {', '.join([cog for cog in cogs])}.", None)
+            embed = self.bot.create_embed(
+                "SCUFFBOT SETUP", f"Unloaded {', '.join([cog for cog in cogs])}.", None)
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @CogGroup.command(name="load", description="Loads cogs.")
@@ -118,9 +125,11 @@ class Cogs(commands.Cog):
             except Exception as e:
                 failed_cogs.append(cog)
         if failed_cogs:
-            embed = self.bot.create_embed("SCUFFBOT SETUP", f"Could not load {', '.join([cog for cog in failed_cogs])}.", None)
+            embed = self.bot.create_embed(
+                "SCUFFBOT SETUP", f"Could not load {', '.join([cog for cog in failed_cogs])}.", None)
         else:
-            embed = self.bot.create_embed("SCUFFBOT SETUP", f"Loaded {', '.join([cog for cog in cogs])}.", None)
+            embed = self.bot.create_embed(
+                "SCUFFBOT SETUP", f"Loaded {', '.join([cog for cog in cogs])}.", None)
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @CogGroup.command(name="reload", description="Reloads cogs.")
@@ -137,9 +146,11 @@ class Cogs(commands.Cog):
             except Exception as e:
                 failed_cogs.append(cog)
         if failed_cogs:
-            embed = self.bot.create_embed("SCUFFBOT SETUP", f"Could not reload {', '.join([cog for cog in failed_cogs])}.", None)
+            embed = self.bot.create_embed(
+                "SCUFFBOT SETUP", f"Could not reload {', '.join([cog for cog in failed_cogs])}.", None)
         else:
-            embed = self.bot.create_embed("SCUFFBOT SETUP", f"Reloaded {', '.join([cog for cog in cogs])}.", None)
+            embed = self.bot.create_embed(
+                "SCUFFBOT SETUP", f"Reloaded {', '.join([cog for cog in cogs])}.", None)
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
