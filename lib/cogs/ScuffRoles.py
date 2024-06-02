@@ -66,7 +66,7 @@ class ScuffRoles(commands.Cog):
     async def get_correct_scuff_title(self, role_map, member):
         closest_key = None
         legacy_roles = [
-            role for role in member.roles if role.id in config["DEV_LEGACY_ROLES"]]
+            role for role in member.roles if role.id in config["LEGACY_ROLES"]]
         for key in role_map:
             if int(key) <= len(legacy_roles) and (closest_key is None or abs(int(key) - len(legacy_roles)) < abs(closest_key - len(legacy_roles))):
                 closest_key = int(key)
