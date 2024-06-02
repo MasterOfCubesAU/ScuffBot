@@ -74,7 +74,7 @@ class Cogs(commands.Cog):
     async def cog_load(self):
         self.logger.info(f"[COG] Loaded {self.__class__.__name__}")
 
-    CogGroup = app_commands.Group(name="cog", description="Manages SCUFFBOT cogs.", guild_ids=[422983658257907732])
+    CogGroup = app_commands.Group(name="cog", description="Manages SCUFFBOT cogs.", guild_ids=[1165195575013163038])
     @CogGroup.command(name="list", description="Lists all cog statuses.")
     @app_commands.checks.has_permissions(manage_guild=True)
     async def list(self, interaction: discord.Interaction):
