@@ -1,4 +1,4 @@
-from lib.bot import SCUFFBOT
+from src.lib.bot import SCUFFBOT
 import argparse
 
 parser = argparse.ArgumentParser(description='Runs ScuffBot.')
