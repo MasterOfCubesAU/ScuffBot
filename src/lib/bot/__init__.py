@@ -1,12 +1,11 @@
+import json
 from discord.ext import commands
 from discord import app_commands
 import logging.config
-import requests
 import logging.config
 import logging
 import discord
 import yaml
-import sys
 import os
 
 
@@ -22,14 +21,15 @@ class SCUFFBOT(commands.Bot):
         super().__init__(command_prefix="!", owner_id=169402073404669952, intents=discord.Intents.all(), application_id=(config["APPLICATION_IDS"]["DEVELOPMENT"] if is_dev else config["APPLICATION_IDS"]["PRODUCTION"]))
         self.is_dev = is_dev
         self.mode = "DEVELOPMENT" if is_dev else "PRODUCTION"
-        
-        
+
+
     async def setup_hook(self):
         self.setup_logger()
-        await self.load_cog_manager()    
-        
+        await self.load_cog_manager()
+
     def setup_logger(self):
-        logging.config.dictConfig(config["LOGGING"])
+        with open("./logging.json") as f:
+            logging.config.dictConfig(json.loads(f.read()))
         self.logger = logging.getLogger(__name__)
         for handler in logging.getLogger().handlers:
             if handler.name == "file" and os.path.isfile('logs/latest.log'):
@@ -37,7 +37,7 @@ class SCUFFBOT(commands.Bot):
         logging.getLogger('discord').setLevel(logging.DEBUG)
 
     async def load_cog_manager(self):
-        await self.load_extension("lib.cogs.Cogs")
+        await self.load_extension("src.lib.cogs.Cogs")
 
     def run(self):
         super().run(config["TOKENS"][self.mode], log_handler=None)
